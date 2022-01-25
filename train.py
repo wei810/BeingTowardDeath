@@ -48,8 +48,8 @@ def main():
     CRITIC_LR = args.critic_lr
     CONTENT_LOSS_CONSTANT = args.content_loss_constant
     DEVICE = args.device
-    LOG_IMAGE_FREQ = 4000
-    WEIGHT_SAVING_FREQ = 50000
+    LOG_IMAGE_FREQ = 5000
+    WEIGHT_SAVING_FREQ = 40000
     NUM_LOG_IMAGES = 32
     LABEL_SMOOTHING = 0.98
 
