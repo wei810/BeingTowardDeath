@@ -1,0 +1,5 @@
+connect.sh
+coco_fileDict.p
+__pycache__/*
+log/HYPER_PARAMS.txt
+evaluate.py
