@@ -1,0 +1,17 @@
+name: pytorch-EFUNet-ImageColorization
+channels:
+- pytorch
+- defaults
+dependencies:
+- python=3.9.7
+- pytorch=1.10.1
+- torchvision
+- pip
+- pip:
+  - numpy==1.21.2
+  - Pillow==8.4.0
+  - pytorch-ignite==0.4.8
+  - tensorboard
+  - tqdm
+  - torchinfo
+  - opencv-python

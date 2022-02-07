@@ -21,8 +21,6 @@ from torch import DeviceObjType, nn, optim
 from torch.utils.data import Dataset, DataLoader
 from torch.utils.tensorboard import SummaryWriter
 import torch
-torch.cuda.device_count()
-torch.backends.cudnn.benchmark = True
 
 
 def main():
@@ -36,9 +34,12 @@ def main():
     parser.add_argument('--critic_lr', default=0.00015, type=float)
     parser.add_argument('--content_loss_constant', default=50., type=float)
     parser.add_argument('--device', default='cuda:0', type=str)
+    parser.add_argument('--log_image_freq', default=5000, type=int)
+    parser.add_argument('--weight_saving_freq', default=40000, type=int)
+    parser.add_argument('--num_log_images', default=32, type=int)
+    parser.add_argument('--label_smoothing', default=0.98, type=float)
     args = parser.parse_args()
 
-    print(args)
     LOG_DIR = args.log_dir
     FILE_DICT_PATH = args.file_dict_path
     EPOCH = args.epoch
@@ -48,11 +49,26 @@ def main():
     CRITIC_LR = args.critic_lr
     CONTENT_LOSS_CONSTANT = args.content_loss_constant
     DEVICE = args.device
-    LOG_IMAGE_FREQ = 4000
-    WEIGHT_SAVING_FREQ = 40000
-    NUM_LOG_IMAGES = 32
-    LABEL_SMOOTHING = 0.98
+    LOG_IMAGE_FREQ = args.log_image_freq
+    WEIGHT_SAVING_FREQ = args.weight_saving_freq
+    NUM_LOG_IMAGES = args.num_log_images
+    LABEL_SMOOTHING = args.label_smoothing
+    if LOG_DIR[-1] == '/':
+        LOG_DIR = LOG_DIR[:-1]
+    txt = 'HYPER_PARAMS:\n' + \
+        '\n'.join([f'{key: <25}: {value}' for key,
+                  value in args.__dict__.items()])
+    print(txt)
+    write_logging(txt, f'{LOG_DIR}/HYPER_PARAMS.txt')
 
+    if 'cuda' in DEVICE:
+        print(f'{"-"*23}\n----- GPU RUNTIME -----\n{"-"*23}')
+        print(f'-> NUM_GPUs: {torch.cuda.device_count()}')
+        print(
+            f'-> SELECTED_GPU: {DEVICE} ({torch.cuda.get_device_name(torch.device(DEVICE))})')
+        torch.backends.cudnn.benchmark = True
+    else:
+        print(f'{"-"*23}\n----- CPU RUNTIME -----\n{"-"*23}')
     fileDict = load_file(FILE_DICT_PATH)
 
     gen = Unet(UnetEncoder, UnetDecoder)
